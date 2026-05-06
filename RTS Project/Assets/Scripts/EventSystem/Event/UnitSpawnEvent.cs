@@ -4,6 +4,6 @@ namespace RTS.EventSystem
 {
     public class UnitSpawnEvent
     {
-        public BaseMobileUnit unit;   
+        public BaseCommandable unit;   
     }
 }

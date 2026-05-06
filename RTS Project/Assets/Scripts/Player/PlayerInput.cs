@@ -34,10 +34,9 @@ namespace RTS.Player
 
 
 
-        private List<ISelectable> UnitSelectedList = new(20);
+        private List<ISelectable> CommandableSelectedList = new(20);
 
-        private List<ISelectable> BuildingsSelectList = new(10);
-        private HashSet<BaseMobileUnit> units = new(200);
+        private HashSet<BaseCommandable> units = new(200);
 
 
         void Awake()
@@ -94,13 +93,13 @@ namespace RTS.Player
         private void HandleFindPath()
         {
             //TODO检测非可移动单位
-            if (UnitSelectedList.Count <= 0)
+            if (CommandableSelectedList.Count <= 0)
                 return;
 
             
             if (Mouse.current.rightButton.wasReleasedThisFrame)
             {
-                ClearBuildingSelectedList();
+                
                 Ray cameraRay = camera.ScreenPointToRay(Mouse.current.position.ReadValue());
                 if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, FloorMask))
                 {
@@ -108,28 +107,33 @@ namespace RTS.Player
                     //EventSystem.EventBus.Publish<UnitMoveToEvent>(new UnitMoveToEvent { Pos = hit.point });
                     //Vector3 centerPos = GetSelectedUnitsCenter();
 
-                    int unitsOnLayer = 0;
-                    int maxUnitsOnLayer = 1;
-                    float circleRadius = 0;
-                    float radialOffset = 0;
+                    
 
-                    foreach (BaseMobileUnit unit in UnitSelectedList)
+                    foreach (var unit in CommandableSelectedList)
                     {
-                        
-                        Vector3 targetPos = new(
-                            hit.point.x + circleRadius * Mathf.Cos(radialOffset * unitsOnLayer),
-                            hit.point.y,
-                            hit.point.z + circleRadius * Mathf.Sin(radialOffset * unitsOnLayer)
-                        );
-                        unitsOnLayer++;
-                        unit.MoveTo(targetPos);
-                        if (unitsOnLayer >= maxUnitsOnLayer)
+                        int unitsOnLayer = 0;
+                        int maxUnitsOnLayer = 1;
+                        float circleRadius = 0;
+                        float radialOffset = 0;
+                        if (unit is BaseMobileUnit)
                         {
-                            unitsOnLayer = 0;
-                            circleRadius += unit.AgentRadius + 1f;
-                            maxUnitsOnLayer = Mathf.FloorToInt(Mathf.PI * circleRadius / unit.AgentRadius);
-                            radialOffset = 2 * Mathf.PI / maxUnitsOnLayer;//单位圆
+                            BaseMobileUnit mobileUnit = unit as BaseMobileUnit;
+                            Vector3 targetPos = new(
+                           hit.point.x + circleRadius * Mathf.Cos(radialOffset * unitsOnLayer),
+                           hit.point.y,
+                           hit.point.z + circleRadius * Mathf.Sin(radialOffset * unitsOnLayer)
+                       );
+                            unitsOnLayer++;
+                            mobileUnit.MoveTo(targetPos);
+                            if (unitsOnLayer >= maxUnitsOnLayer)
+                            {
+                                unitsOnLayer = 0;
+                                circleRadius += mobileUnit.AgentRadius + 1f;
+                                maxUnitsOnLayer = Mathf.FloorToInt(Mathf.PI * circleRadius / mobileUnit.AgentRadius);
+                                radialOffset = 2 * Mathf.PI / maxUnitsOnLayer;//单位圆
+                            }
                         }
+
 
                     }
                 }
@@ -154,8 +158,7 @@ namespace RTS.Player
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
                 Debug.Log("鼠标左键按下，清空选择列表");
-                ClearMobileUnitSelectedList();
-                ClearBuildingSelectedList();
+                ClearSelectedList();
                 isDragging = false;
                 DragStartPos = Mouse.current.position.ReadValue();
             }
@@ -191,21 +194,14 @@ namespace RTS.Player
             {
                 Bounds selectBounds = new(SelectBoxUI.anchoredPosition, SelectBoxUI.sizeDelta);
                 // 检测单位是否再框内
-                foreach (BaseMobileUnit unit in units)
+                foreach (BaseCommandable unit in units)
                 {
                     Vector2 unitsPos = camera.WorldToScreenPoint(unit.transform.position);
                     if (selectBounds.Contains(unitsPos))
                     {
                         EventSystem.EventBus.Publish<UnitSelectEvent>(
                         new UnitSelectEvent { Unit = unit });
-                        if (unit is IMovable)
-                        {
-                            UnitSelectedList.Add(unit);
-                        }
-                        else
-                        {
-                            BuildingsSelectList.Add(unit);//暂时先都存着不做优先级处理TODO
-                        }
+                            CommandableSelectedList.Add(unit);
                     }
                 }
                 SelectBoxUI.gameObject.SetActive(false);
@@ -228,49 +224,33 @@ namespace RTS.Player
                     //Debug.Log($"命中物体: {hit.collider.gameObject.name}, 单位: {unit}");
                     EventSystem.EventBus.Publish<UnitSelectEvent>(
                         new UnitSelectEvent { Unit = unit });
-                    if(unit is IMovable)
-                    {
-                        UnitSelectedList.Add(unit);
-                    }
-                    else
-                    {
-                        BuildingsSelectList.Add(unit);//暂时先都存着不做优先级处理TODO
-                    }
-                    Debug.Log("选中单位，已添加到列表");
+                        CommandableSelectedList.Add(unit);
+                        Debug.Log("选中单位，已添加到列表");
+                    
                 }
             }
         }
 
-        private void ClearMobileUnitSelectedList()
+        private void ClearSelectedList()
         {
-            Debug.Log($"清空单位选择列表，当前列表数量: {UnitSelectedList.Count}");
+            Debug.Log($"清空单位选择列表，当前列表数量: {CommandableSelectedList.Count}");
 
-            if (UnitSelectedList.Count > 0)
+            if (CommandableSelectedList.Count > 0)
             {
-                for (int i = 0; i < UnitSelectedList.Count; i++)
+                for (int i = 0; i < CommandableSelectedList.Count; i++)
                 {
-                    Debug.Log($"取消选择单位: {UnitSelectedList[i]}");
+                    Debug.Log($"取消选择单位: {CommandableSelectedList[i]}");
                     EventSystem.EventBus.Publish<UnitDeSelectEvent>(
-                        new UnitDeSelectEvent { Unit = UnitSelectedList[i] });
+                        new UnitDeSelectEvent { Unit = CommandableSelectedList[i] });
                 }
-                
-                UnitSelectedList.Clear();
+
+                CommandableSelectedList.Clear();
 
                 Debug.Log("列表已清空");
             }
 
         }
-        private void ClearBuildingSelectedList()
-        {
-            Debug.Log($"清空建筑选择列表，当前列表数量: {BuildingsSelectList.Count}");
-            for (int i = 0; i < BuildingsSelectList.Count; i++)
-            {
-                Debug.Log($"取消选择单位: {BuildingsSelectList[i]}");
-                EventSystem.EventBus.Publish<UnitDeSelectEvent>(
-                    new UnitDeSelectEvent { Unit = BuildingsSelectList[i] });
-            }
-            BuildingsSelectList.Clear();
-        }
+
         private void HandleZooming()
         {
             float scrollAmount = Mouse.current.scroll.ReadValue().y * CameraConfig.mouseScrollSpeed;

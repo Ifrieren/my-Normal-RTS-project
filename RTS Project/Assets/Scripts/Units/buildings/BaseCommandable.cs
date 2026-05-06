@@ -1,39 +1,52 @@
-using UnityEngine;
+using System;
+using System.Windows.Input;
+using RTS.Commands;
 using RTS.EventSystem;
+using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Rendering.Universal;
-using System.ComponentModel.Design;
+
 namespace RTS.Units
 {
-    public class BaseBuilding : MonoBehaviour, ISelectable
+    public class BaseCommandable : MonoBehaviour, ISelectable
     {
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
         [Header("组件")]
-        [SerializeField] private DecalProjector DecalProjector;
+        [SerializeField] protected DecalProjector DecalProjector;
 
         [Header("状态")]
-        [SerializeField] private bool isSelected;
+        [SerializeField] protected bool isSelected;
 
-        [field:Header("数据")]
-        [field: SerializeField] public float health{ get; private set; }
-        void OnEnable()
+        [field: Header("数据")]
+        [SerializeField] protected UnitSO UnitAttribute;
+        [field: SerializeField] public float currentHealth { get; protected set; }
+        [field: SerializeField] public BaseCommand[] availableCommands{ get; protected set; }
+
+        protected virtual void Start()
+        {
+            currentHealth = UnitAttribute.maxHealth;
+            EventSystem.EventBus.Publish<UnitSpawnEvent>(new UnitSpawnEvent { unit = this });
+        }
+
+        protected virtual void OnEnable()
         {
             EventSystem.EventBus.Subscribe<UnitSelectEvent>(OnSelected);
             EventSystem.EventBus.Subscribe<UnitDeSelectEvent>(OndeSelected);
             //EventSystem.EventBus.Subscribe<UnitMoveToEvent>(MoveTo);
         }
 
-        void OnDisable()
+        protected virtual void OnDisable()
         {
             EventSystem.EventBus.UnSubscribe<UnitSelectEvent>(OnSelected);
             EventSystem.EventBus.UnSubscribe<UnitDeSelectEvent>(OndeSelected);
             //EventSystem.EventBus.UnSubscribe<UnitMoveToEvent>(MoveTo);
         }
+
         public void OnSelected(UnitSelectEvent evt)
         {
-            Debug.Log($"building.OnSelected 被调用, evt.Unit: {evt.Unit}, this: {(ISelectable)this}");
+            
             if (evt.Unit == (ISelectable)this)
             {
-                Debug.Log("选中当前building，显示DecalProjector");
+                Debug.Log($"OnSelected 被调用, evt.Unit: {evt.Unit}, this: {this.gameObject.name}");
                 DecalProjector?.gameObject.SetActive(true);
                 isSelected = true;
                 //TODO
@@ -42,10 +55,10 @@ namespace RTS.Units
 
         public void OndeSelected(UnitDeSelectEvent evt)
         {
-            Debug.Log($"building.OndeSelected 被调用, evt.Unit: {evt.Unit}, this: {(ISelectable)this}");
+            
             if (evt.Unit == (ISelectable)this)
             {
-                Debug.Log("取消选中当前building，隐藏DecalProjector");
+                Debug.Log($"OndeSelected 被调用, evt.Unit: {evt.Unit}, this: {this.gameObject.name}");
                 DecalProjector?.gameObject.SetActive(false);
                 isSelected = false;
                 //TODO

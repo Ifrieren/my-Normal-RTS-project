@@ -6,30 +6,31 @@ using UnityEngine.Rendering.Universal;
 namespace RTS.Units
 {
     [RequireComponent(typeof(NavMeshAgent))]
-    public abstract class BaseMobileUnit : MonoBehaviour, ISelectable, IMovable
+    public abstract class BaseMobileUnit : BaseCommandable, IMovable
     {
         [Header("组件")]
         [SerializeField] private Vector3 target;
-        [SerializeField] private DecalProjector DecalProjector;
 
         [SerializeField] private NavMeshAgent agent;
 
         [Header("状态")]
         //[SerializeField] private bool isFindingPath;
-        [SerializeField] private bool isSelected;
+
 
         [Header("参数")]
 
         public float AgentRadius => agent.radius;
+
+
 
         private void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
         }
 
-        private void Start()
+        protected override void Start()
         {
-            EventSystem.EventBus.Publish<UnitSpawnEvent>(new UnitSpawnEvent { unit = this });
+            base.Start();
         }
         // Update is called once per frame
         void FixedUpdate()
@@ -41,43 +42,16 @@ namespace RTS.Units
             }
         }
 
-        void OnEnable()
+        protected override void OnEnable()
         {
-            EventSystem.EventBus.Subscribe<UnitSelectEvent>(OnSelected);
-            EventSystem.EventBus.Subscribe<UnitDeSelectEvent>(OndeSelected);
-            //EventSystem.EventBus.Subscribe<UnitMoveToEvent>(MoveTo);
+            base.OnEnable();
         }
 
-        void OnDisable()
+        protected override void OnDisable()
         {
-            EventSystem.EventBus.UnSubscribe<UnitSelectEvent>(OnSelected);
-            EventSystem.EventBus.UnSubscribe<UnitDeSelectEvent>(OndeSelected);
-            //EventSystem.EventBus.UnSubscribe<UnitMoveToEvent>(MoveTo);
+            base.OnDisable();
         }
 
-        public void OnSelected(UnitSelectEvent evt)
-        {
-            Debug.Log($"Unit.OnSelected 被调用, evt.Unit: {evt.Unit}, this: {(ISelectable)this}");
-            if (evt.Unit == (ISelectable)this)
-            {
-                Debug.Log("选中当前Unit，显示DecalProjector");
-                DecalProjector?.gameObject.SetActive(true);
-                isSelected = true;
-                //TODO
-            }
-        }
-
-        public void OndeSelected(UnitDeSelectEvent evt)
-        {
-            Debug.Log($"Unit.OndeSelected 被调用, evt.Unit: {evt.Unit}, this: {(ISelectable)this}");
-            if (evt.Unit == (ISelectable)this)
-            {
-                Debug.Log("取消选中当前Unit，隐藏DecalProjector");
-                DecalProjector?.gameObject.SetActive(false);
-                isSelected = false;
-                //TODO
-            }
-        }
 
         public void MoveTo(Vector3 Pos)
         {

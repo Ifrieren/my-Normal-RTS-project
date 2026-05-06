@@ -154,7 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RTS.Units.SupplyHut
   DecalProjector: {fileID: 1013788029810934493}
   isSelected: 0
-  <health>k__BackingField: 0
+  UnitAttribute: {fileID: 11400000, guid: 112b645af1ab245428f8dad0fef7c4b8, type: 2}
+  <currenthealth>k__BackingField: 0
 --- !u!208 &4920050646690924572
 NavMeshObstacle:
   m_ObjectHideFlags: 0

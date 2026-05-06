@@ -74,7 +74,7 @@ GameObject:
   - component: {fileID: 2340938178756563700}
   - component: {fileID: 9085846978488167732}
   - component: {fileID: 6996550099181714203}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Airport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,9 +189,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1
-  m_Height: 3
+  m_Height: 2.3683095
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 1.3158453, z: 0}
 --- !u!114 &6996550099181714203
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,6 +208,8 @@ MonoBehaviour:
   DecalProjector: {fileID: 3482168275199415737}
   agent: {fileID: 2751606498446182935}
   isSelected: 0
+  UnitAttribute: {fileID: 0}
+  <currenthealth>k__BackingField: 0
 --- !u!1001 &6479326731446870838
 PrefabInstance:
   m_ObjectHideFlags: 0
