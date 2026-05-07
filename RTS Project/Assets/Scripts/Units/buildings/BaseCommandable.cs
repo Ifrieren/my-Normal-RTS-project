@@ -24,16 +24,16 @@ namespace RTS.Units
         public float AgentRadius => agent.radius;
 
         [field: SerializeField] public float currentHealth { get; protected set; }
-        [field: SerializeField] public BaseCommand[] availableCommands{ get; protected set; }
+        [field: SerializeField] public BaseCommand[] availableCommands { get; protected set; }
 
         protected virtual void Start()
         {
             currentHealth = UnitAttribute.maxHealth;
             EventSystem.EventBus.Publish<UnitSpawnEvent>(new UnitSpawnEvent { unit = this });
 
-            if(!this.TryGetComponent(out agent))
+            if (!this.TryGetComponent(out agent))
             {
-                Debug.Log("where is your NavAgent?");
+                Debug.Log($"where is your NavAgent?, this:{this.name}");
             }
         }
 
@@ -53,7 +53,7 @@ namespace RTS.Units
 
         public void OnSelected(UnitSelectEvent evt)
         {
-            
+
             if (evt.Unit == (ISelectable)this)
             {
                 Debug.Log($"OnSelected 被调用, evt.Unit: {evt.Unit}, this: {this.gameObject.name}");
@@ -65,7 +65,7 @@ namespace RTS.Units
 
         public void OndeSelected(UnitDeSelectEvent evt)
         {
-            
+
             if (evt.Unit == (ISelectable)this)
             {
                 Debug.Log($"OndeSelected 被调用, evt.Unit: {evt.Unit}, this: {this.gameObject.name}");
