@@ -1,0 +1,13 @@
+{
+  "name": "com.editor-terminal",
+  "version": "1.0.0",
+  "displayName": "Editor Terminal",
+  "description": "Unity Editor 内置终端面板——在编辑器内直接运行命令行，如 opencode、git、npm 等。",
+  "unity": "2021.3",
+  "keywords": ["terminal", "console", "shell", "cli", "cmd", "powershell"],
+  "author": {
+    "name": "Your Name",
+    "email": "your@email.com"
+  },
+  "license": "MIT"
+}
