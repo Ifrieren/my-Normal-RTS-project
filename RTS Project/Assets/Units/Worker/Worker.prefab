@@ -131,12 +131,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79dc9c6bfb33d974a9187651429ce919, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameDevTV.RTS.Units.Worker
-  target: {x: 0, y: 0, z: 0}
   DecalProjector: {fileID: 2390728488662352161}
-  agent: {fileID: 0}
   isSelected: 0
   UnitAttribute: {fileID: 11400000, guid: 9cbdcc3989332e34aabff9d677ac9684, type: 2}
-  <currenthealth>k__BackingField: 0
+  <currentHealth>k__BackingField: 0
+  <availableCommands>k__BackingField:
+  - {fileID: 11400000, guid: 3e6da00ccce90b24090d11f85b573ddd, type: 2}
+  target: {x: 0, y: 0, z: 0}
+  agent: {fileID: 0}
 --- !u!195 &4986779204346647142
 NavMeshAgent:
   m_ObjectHideFlags: 0

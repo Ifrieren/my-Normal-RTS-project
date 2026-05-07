@@ -12,12 +12,17 @@ namespace RTS.Units
     {
         [Header("组件")]
         [SerializeField] protected DecalProjector DecalProjector;
+        [SerializeField] protected NavMeshAgent agent;
 
         [Header("状态")]
         [SerializeField] protected bool isSelected;
 
         [field: Header("数据")]
         [SerializeField] protected UnitSO UnitAttribute;
+        [Header("参数")]
+
+        public float AgentRadius => agent.radius;
+
         [field: SerializeField] public float currentHealth { get; protected set; }
         [field: SerializeField] public BaseCommand[] availableCommands{ get; protected set; }
 
@@ -25,6 +30,11 @@ namespace RTS.Units
         {
             currentHealth = UnitAttribute.maxHealth;
             EventSystem.EventBus.Publish<UnitSpawnEvent>(new UnitSpawnEvent { unit = this });
+
+            if(!this.TryGetComponent(out agent))
+            {
+                Debug.Log("where is your NavAgent?");
+            }
         }
 
         protected virtual void OnEnable()

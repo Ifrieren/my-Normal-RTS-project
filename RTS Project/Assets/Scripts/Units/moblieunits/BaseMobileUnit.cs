@@ -8,21 +8,7 @@ namespace RTS.Units
     [RequireComponent(typeof(NavMeshAgent))]
     public abstract class BaseMobileUnit : BaseCommandable, IMovable
     {
-        [Header("组件")]
         [SerializeField] private Vector3 target;
-
-        [SerializeField] private NavMeshAgent agent;
-
-        [Header("状态")]
-        //[SerializeField] private bool isFindingPath;
-
-
-        [Header("参数")]
-
-        public float AgentRadius => agent.radius;
-
-
-
         private void Awake()
         {
             agent = GetComponent<NavMeshAgent>();

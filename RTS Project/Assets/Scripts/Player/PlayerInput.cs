@@ -1,7 +1,9 @@
+using RTS.Commands;
 using RTS.EventSystem;
 using RTS.Units;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -34,7 +36,7 @@ namespace RTS.Player
 
 
 
-        private List<ISelectable> CommandableSelectedList = new(20);
+        private List<BaseCommandable> CommandableSelectedList = new(20);
 
         private HashSet<BaseCommandable> units = new(200);
 
@@ -106,36 +108,22 @@ namespace RTS.Player
                     Debug.Log("已发射寻路射线检测到地面");
                     //EventSystem.EventBus.Publish<UnitMoveToEvent>(new UnitMoveToEvent { Pos = hit.point });
                     //Vector3 centerPos = GetSelectedUnitsCenter();
-
                     
 
-                    foreach (var unit in CommandableSelectedList)
+                    for(int i = 0;i < CommandableSelectedList.Count ; i++)
                     {
-                        int unitsOnLayer = 0;
-                        int maxUnitsOnLayer = 1;
-                        float circleRadius = 0;
-                        float radialOffset = 0;
-                        if (unit is BaseMobileUnit)
+                        CommandContext commandContext = new CommandContext(CommandableSelectedList[i], hit, i);
+                        
+                        foreach(ICommand command in CommandableSelectedList[i].availableCommands)
                         {
-                            BaseMobileUnit mobileUnit = unit as BaseMobileUnit;
-                            Vector3 targetPos = new(
-                           hit.point.x + circleRadius * Mathf.Cos(radialOffset * unitsOnLayer),
-                           hit.point.y,
-                           hit.point.z + circleRadius * Mathf.Sin(radialOffset * unitsOnLayer)
-                       );
-                            unitsOnLayer++;
-                            mobileUnit.MoveTo(targetPos);
-                            if (unitsOnLayer >= maxUnitsOnLayer)
+                            if (command.CanHandle(commandContext))
                             {
-                                unitsOnLayer = 0;
-                                circleRadius += mobileUnit.AgentRadius + 1f;
-                                maxUnitsOnLayer = Mathf.FloorToInt(Mathf.PI * circleRadius / mobileUnit.AgentRadius);
-                                radialOffset = 2 * Mathf.PI / maxUnitsOnLayer;//单位圆
+                                command.Handle(commandContext);
+                                break;
                             }
                         }
-
-
                     }
+
                 }
             }
         }
@@ -219,7 +207,7 @@ namespace RTS.Player
                 //Debug.Log($"射线起点: {cameraRay.origin}, 方向: {cameraRay.direction}");
 
                 if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue,LayerMask.GetMask("Default"))
-                && hit.collider.TryGetComponent(out RTS.Units.ISelectable unit))
+                && hit.collider.TryGetComponent(out RTS.Units.BaseCommandable unit))
                 {
                     //Debug.Log($"命中物体: {hit.collider.gameObject.name}, 单位: {unit}");
                     EventSystem.EventBus.Publish<UnitSelectEvent>(
