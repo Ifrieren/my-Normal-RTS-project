@@ -6,18 +6,19 @@ using Unity.VisualScripting;
 using RTS.Commands;
 using Unity.AppUI.UI;
 using System.Linq;
+using UnityEngine.Events;
 namespace RTS.UI
 {
     public class UIActions : MonoBehaviour
     {
         [SerializeField] private UIActionButtons[] actionButtons;
-        private HashSet<BaseCommandable> selectedUnit = new(20);
+        private HashSet<BaseCommandable> selectedUnit = new(30);
 
         void Start()
         {
             foreach (UIActionButtons button in actionButtons)
             {
-                button.SetIcon(null);
+                button.CommandDisable();
             }
         }
         void OnEnable()
@@ -63,14 +64,21 @@ namespace RTS.UI
                 BaseCommand actionForSlot = availableCommands.Where(action => action.slot == i).FirstOrDefault();
                 if (actionForSlot != null)
                 {
-                    actionButtons[i].SetIcon(actionForSlot.Icon);
+                    actionButtons[i].CommandEnableFor(actionForSlot, HandleClick(actionForSlot));
                 }
                 else
                 {
-                    actionButtons[i].SetIcon(null);
+                    actionButtons[i].CommandDisable();
                 }
             }
         }
+        
+        private UnityAction HandleClick(BaseCommand command)
+        {
+            return () => EventSystem.EventBus.Publish<CommandSelectedEvent>(
+                new CommandSelectedEvent { Command = command });
+        }
+
     }
 
 }

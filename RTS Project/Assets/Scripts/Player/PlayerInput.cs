@@ -8,6 +8,7 @@ using Unity.Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngineEventSystem = UnityEngine.EventSystems;
 
 namespace RTS.Player
 {
@@ -34,8 +35,10 @@ namespace RTS.Player
         [SerializeField] private bool inEdgeZone;
         [SerializeField] private bool isDragging;
 
+        [SerializeField] private bool isMouseDownOnUI;
 
 
+        private BaseCommand ActiveCommand = null;
         private List<BaseCommandable> CommandableSelectedList = new(20);
 
         private HashSet<BaseCommandable> units = new(200);
@@ -58,11 +61,13 @@ namespace RTS.Player
         void OnEnable()
         {
             EventSystem.EventBus.Subscribe<UnitSpawnEvent>(InitAliveUnits);
+            EventSystem.EventBus.Subscribe<CommandSelectedEvent>(HandleCommandSelected);
         }
 
         void OnDisable()
         {
             EventSystem.EventBus.UnSubscribe<UnitSpawnEvent>(InitAliveUnits);
+            EventSystem.EventBus.UnSubscribe<CommandSelectedEvent>(HandleCommandSelected);
         }
 
         // Update is called once per frame
@@ -92,29 +97,37 @@ namespace RTS.Player
                 mousePanTimer = 0f;
             }
         }
+
+        private void HandleCommandSelected(CommandSelectedEvent evt)
+        {
+            Debug.Log("触发UI命令选择");
+            ActiveCommand = evt.Command;
+        }
+
         private void HandleFindPath()
         {
             //TODO检测非可移动单位
             if (CommandableSelectedList.Count <= 0)
                 return;
 
-            
+
             if (Mouse.current.rightButton.wasReleasedThisFrame)
             {
-                
+                ActiveCommand = null; // 处理边界条件
+
                 Ray cameraRay = camera.ScreenPointToRay(Mouse.current.position.ReadValue());
                 if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, FloorMask))
                 {
                     Debug.Log("已发射寻路射线检测到地面");
                     //EventSystem.EventBus.Publish<UnitMoveToEvent>(new UnitMoveToEvent { Pos = hit.point });
                     //Vector3 centerPos = GetSelectedUnitsCenter();
-                    
 
-                    for(int i = 0;i < CommandableSelectedList.Count ; i++)
+
+                    for (int i = 0; i < CommandableSelectedList.Count; i++)
                     {
                         CommandContext commandContext = new CommandContext(CommandableSelectedList[i], hit, i);
-                        
-                        foreach(ICommand command in CommandableSelectedList[i].availableCommands)
+
+                        foreach (ICommand command in CommandableSelectedList[i].availableCommands)
                         {
                             if (command.CanHandle(commandContext))
                             {
@@ -145,18 +158,28 @@ namespace RTS.Player
 
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
+                isMouseDownOnUI = UnityEngineEventSystem.EventSystem.current.IsPointerOverGameObject();
+                if (isMouseDownOnUI)
+                    return;
+
                 Debug.Log("鼠标左键按下，清空选择列表");
-                ClearSelectedList();
+                if(ActiveCommand == null)
+                {
+                    ClearSelectedList();
+                }
                 isDragging = false;
                 DragStartPos = Mouse.current.position.ReadValue();
             }
+
+            if (isMouseDownOnUI)
+                return;
 
             if (Mouse.current.leftButton.isPressed && !isDragging)
             {
                 if (Vector2.Distance(DragStartPos, Mouse.current.position.ReadValue()) > 5f)
                 {
                     isDragging = true;
-                    SelectBoxUI.gameObject.SetActive(true); // 显示你的UI绿框
+                    SelectBoxUI.gameObject.SetActive(true);
                 }
             }
 
@@ -166,11 +189,15 @@ namespace RTS.Player
             }
             else
             {
-                HandleSingleSelect();
+                Debug.Log($"isDraing:{isDragging}");
+                HandleSingleSelectOrCommand();
             }
+            
         }
+
         private void HandleMultSelect()
         {
+            Debug.Log("触发多单位选择");
             SelectBoxUI.position = DragStartPos;
             Vector2 currentPos = Mouse.current.position.ReadValue();
             Vector2 size = currentPos - DragStartPos;
@@ -189,7 +216,7 @@ namespace RTS.Player
                     {
                         EventSystem.EventBus.Publish<UnitSelectEvent>(
                         new UnitSelectEvent { Unit = unit });
-                            CommandableSelectedList.Add(unit);
+                        CommandableSelectedList.Add(unit);
                     }
                 }
                 SelectBoxUI.gameObject.SetActive(false);
@@ -197,24 +224,41 @@ namespace RTS.Player
             }
         }
 
-        private void HandleSingleSelect()
+        private void HandleSingleSelectOrCommand() //左键单击
         {
             // 单击选中
+            Debug.Log("触发单个单位选择");
             if (Mouse.current.leftButton.wasReleasedThisFrame)
             {
-                Debug.Log("鼠标左键释放，开始选择单位");
+                
                 Ray cameraRay = camera.ScreenPointToRay(Mouse.current.position.ReadValue());
                 //Debug.Log($"射线起点: {cameraRay.origin}, 方向: {cameraRay.direction}");
 
-                if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue,LayerMask.GetMask("Default"))
+                if (ActiveCommand == null 
+                && Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, LayerMask.GetMask("Default"))
                 && hit.collider.TryGetComponent(out RTS.Units.BaseCommandable unit))
                 {
+                    Debug.Log("鼠标左键释放，开始选择单位");
                     //Debug.Log($"命中物体: {hit.collider.gameObject.name}, 单位: {unit}");
                     EventSystem.EventBus.Publish<UnitSelectEvent>(
                         new UnitSelectEvent { Unit = unit });
-                        CommandableSelectedList.Add(unit);
-                        Debug.Log("选中单位，已添加到列表");
-                    
+                    CommandableSelectedList.Add(unit);
+                    Debug.Log("选中单位，已添加到列表");
+                }
+                else if (ActiveCommand != null &&
+                Physics.Raycast(cameraRay, out hit, float.MaxValue, FloorMask))
+                {
+                    Debug.Log("左键触发命令");
+                    List<BaseCommandable> Commandables = CommandableSelectedList.
+                    Where((unit) => unit is BaseMobileUnit).
+                    Cast<BaseCommandable>().ToList();
+
+                    for (int i = 0; i < Commandables.Count; i++)
+                    {
+                        CommandContext commandContext = new(Commandables[i], hit, i);
+                        ActiveCommand.Handle(commandContext);
+                    }
+                    ActiveCommand = null;
                 }
             }
         }
@@ -293,16 +337,11 @@ namespace RTS.Player
             movement += GetMousePan();
             //  算出原本要移动过去的目标位置
             Vector3 desiredPosition = cameraTarget.position + HandlePanRelaitive(movement);
-
-            // ==========================================
-            //  新增逻辑：基于 Collider 的地图边界限制
-            // ==========================================
             if (CameraConfig.enableMapLimit && CameraConfig.mapBounds != null)
             {
 
                 // 它的作用是："如果目标点在Collider里面，原样返回目标点；
                 // 如果目标点跑到了Collider外面，就返回Collider表面离目标点最近的那个点。"
-                // 注意：为了只限制水平移动，我们要保持 Target 原本的高度 (Y轴) 不变
 
                 Vector3 clampedPosition = CameraConfig.mapBounds.ClosestPoint(desiredPosition);
 
