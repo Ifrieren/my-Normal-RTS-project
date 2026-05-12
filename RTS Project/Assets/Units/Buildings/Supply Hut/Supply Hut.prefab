@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3000116093342552551}
   - component: {fileID: 1013788029810934493}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Decal Projector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: -3515277171607460428}
   - component: {fileID: 1067493971932893144}
   - component: {fileID: 4920050646690924572}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Supply Hut
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,9 +153,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RTS.Units.SupplyHut
   DecalProjector: {fileID: 1013788029810934493}
+  agent: {fileID: 0}
   isSelected: 0
   UnitAttribute: {fileID: 11400000, guid: 112b645af1ab245428f8dad0fef7c4b8, type: 2}
-  <currenthealth>k__BackingField: 0
+  <currentHealth>k__BackingField: 0
+  <availableCommands>k__BackingField: []
 --- !u!208 &4920050646690924572
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -242,7 +244,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: e7193d6645526da4f8d63f088f9a6f44, type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

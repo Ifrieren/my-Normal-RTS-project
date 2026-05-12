@@ -53,13 +53,14 @@ namespace RTS.Units
         {
             if (Vector3.Distance(target, unit) < agent.stoppingDistance)
             {
+                
                 //isFindingPath = false;
                 agent.ResetPath();
                 Debug.Log("寻路已完成，寻路目标置为空");
 
             }
         }
-
+       
         // private void HandleBrake()
         // {
         //     if (agent.hasPath && !agent.pathPending)

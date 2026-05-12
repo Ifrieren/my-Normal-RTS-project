@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8954186936418030536}
   - component: {fileID: 7751773159064056470}
   - component: {fileID: 5697435845464662991}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Command Post
   m_TagString: Home
   m_Icon: {fileID: 0}
@@ -86,9 +86,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CommandPost
   DecalProjector: {fileID: 4086701707762634684}
+  agent: {fileID: 0}
   isSelected: 0
   UnitAttribute: {fileID: 0}
-  <currenthealth>k__BackingField: 0
+  <currentHealth>k__BackingField: 0
+  <availableCommands>k__BackingField: []
 --- !u!1 &7166962564996788710
 GameObject:
   m_ObjectHideFlags: 0
@@ -99,7 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2669325919310654284}
   - component: {fileID: 4086701707762634684}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Decal Projector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,6 +222,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 981dc53f9c78ccd4eb6a545f083bc814, type: 3}
       propertyPath: m_Name
       value: Building_02
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 981dc53f9c78ccd4eb6a545f083bc814, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

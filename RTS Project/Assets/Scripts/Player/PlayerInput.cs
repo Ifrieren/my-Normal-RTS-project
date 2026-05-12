@@ -1,5 +1,6 @@
 using RTS.Commands;
 using RTS.EventSystem;
+using RTS.UI;
 using RTS.Units;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using Unity.Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 using UnityEngineEventSystem = UnityEngine.EventSystems;
 
 namespace RTS.Player
@@ -23,6 +25,8 @@ namespace RTS.Player
 
         [SerializeField] private RectTransform SelectBoxUI;
         [SerializeField] private LayerMask FloorMask;
+
+        [SerializeField] private LayerMask CommandableMask;
 
         [Header("参数设置")]
         [SerializeField] private CameraConfig CameraConfig;
@@ -103,6 +107,12 @@ namespace RTS.Player
             Debug.Log("触发UI命令选择");
             ActiveCommand = evt.Command;
         }
+        private void HandleCommandRingUI(Vector3 Pos)
+        {
+            EventSystem.EventBus.Publish<MobileCommandRingSpawnEvent>(new
+             MobileCommandRingSpawnEvent
+            { Pos = Pos });
+        }
 
         private void HandleFindPath()
         {
@@ -121,7 +131,7 @@ namespace RTS.Player
                     Debug.Log("已发射寻路射线检测到地面");
                     //EventSystem.EventBus.Publish<UnitMoveToEvent>(new UnitMoveToEvent { Pos = hit.point });
                     //Vector3 centerPos = GetSelectedUnitsCenter();
-
+                    HandleCommandRingUI(hit.point);
 
                     for (int i = 0; i < CommandableSelectedList.Count; i++)
                     {
@@ -163,7 +173,7 @@ namespace RTS.Player
                     return;
 
                 Debug.Log("鼠标左键按下，清空选择列表");
-                if(ActiveCommand == null)
+                if (ActiveCommand == null)
                 {
                     ClearSelectedList();
                 }
@@ -192,7 +202,7 @@ namespace RTS.Player
                 Debug.Log($"isDraing:{isDragging}");
                 HandleSingleSelectOrCommand();
             }
-            
+
         }
 
         private void HandleMultSelect()
@@ -230,12 +240,12 @@ namespace RTS.Player
             Debug.Log("触发单个单位选择");
             if (Mouse.current.leftButton.wasReleasedThisFrame)
             {
-                
+
                 Ray cameraRay = camera.ScreenPointToRay(Mouse.current.position.ReadValue());
                 //Debug.Log($"射线起点: {cameraRay.origin}, 方向: {cameraRay.direction}");
 
-                if (ActiveCommand == null 
-                && Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, LayerMask.GetMask("Default"))
+                if (ActiveCommand == null
+                && Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, CommandableMask)
                 && hit.collider.TryGetComponent(out RTS.Units.BaseCommandable unit))
                 {
                     Debug.Log("鼠标左键释放，开始选择单位");
@@ -252,7 +262,7 @@ namespace RTS.Player
                     List<BaseCommandable> Commandables = CommandableSelectedList.
                     Where((unit) => unit is BaseMobileUnit).
                     Cast<BaseCommandable>().ToList();
-
+                    HandleCommandRingUI(hit.point);
                     for (int i = 0; i < Commandables.Count; i++)
                     {
                         CommandContext commandContext = new(Commandables[i], hit, i);
