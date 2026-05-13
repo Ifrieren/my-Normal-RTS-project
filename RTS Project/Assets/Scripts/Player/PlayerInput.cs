@@ -106,6 +106,10 @@ namespace RTS.Player
         {
             Debug.Log("触发UI命令选择");
             ActiveCommand = evt.Command;
+            if (!ActiveCommand.RequireClickToActivate)
+            {
+                ActivateCommand(new RaycastHit());
+            }
         }
         private void HandleCommandRingUI(Vector3 Pos)
         {
@@ -258,19 +262,24 @@ namespace RTS.Player
                 else if (ActiveCommand != null &&
                 Physics.Raycast(cameraRay, out hit, float.MaxValue, FloorMask))
                 {
-                    Debug.Log("左键触发命令");
-                    List<BaseCommandable> Commandables = CommandableSelectedList.
-                    Where((unit) => unit is BaseMobileUnit).
-                    Cast<BaseCommandable>().ToList();
-                    HandleCommandRingUI(hit.point);
-                    for (int i = 0; i < Commandables.Count; i++)
-                    {
-                        CommandContext commandContext = new(Commandables[i], hit, i);
-                        ActiveCommand.Handle(commandContext);
-                    }
-                    ActiveCommand = null;
+                    ActivateCommand(hit);
                 }
             }
+        }
+
+        private void ActivateCommand(RaycastHit hit)
+        {
+            Debug.Log("左键触发命令");
+            List<BaseCommandable> Commandables = CommandableSelectedList.
+            Where((unit) => unit is BaseCommandable).
+            Cast<BaseCommandable>().ToList();
+            HandleCommandRingUI(hit.point);
+            for (int i = 0; i < Commandables.Count; i++)
+            {
+                CommandContext commandContext = new(Commandables[i], hit, i);
+                ActiveCommand.Handle(commandContext);
+            }
+            ActiveCommand = null;
         }
 
         private void ClearSelectedList()

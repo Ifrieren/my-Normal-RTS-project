@@ -4,10 +4,10 @@ using RTS.Commands;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-namespace RTS.UI
+namespace RTS.UI.Containers
 {
     [RequireComponent(typeof(Button))]
-    public class UIActionButtons : MonoBehaviour
+    public class UIActionButtons : MonoBehaviour, IUIElement<BaseCommand, UnityAction>
     {
         [SerializeField] private Image icon;
         [SerializeField] private Button button;
@@ -17,14 +17,14 @@ namespace RTS.UI
             button = GetComponent<Button>();
         }
 
-        public void CommandEnableFor(BaseCommand command, UnityAction onClick)
+        public void EnableFor(BaseCommand command, UnityAction onClick)
         {
             SetIcon(command.Icon);
             button.interactable = true;
             button.onClick.AddListener(onClick);
         }
-        
-        public void CommandDisable()
+
+        public void Disable()
         {
             SetIcon(null);
             button.interactable = false;
@@ -32,16 +32,16 @@ namespace RTS.UI
         }
         private void SetIcon(Sprite icon)
         {
-            if(icon == null)
+            if (icon == null)
             {
-                this.icon.enabled = false;   
+                this.icon.enabled = false;
             }
             else
             {
                 this.icon.sprite = icon;
                 this.icon.enabled = true;
             }
-            
+
         }
 
     }
