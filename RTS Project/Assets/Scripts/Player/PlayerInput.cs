@@ -44,8 +44,8 @@ namespace RTS.Player
 
         private BaseCommand ActiveCommand = null;
         private List<BaseCommandable> CommandableSelectedList = new(20);
-
-        private HashSet<BaseCommandable> units = new(200);
+        
+        private HashSet<BaseCommandable> units = new(200); // 这是场景中总共可容纳的单位
 
 
         void Awake()
@@ -108,11 +108,13 @@ namespace RTS.Player
             ActiveCommand = evt.Command;
             if (!ActiveCommand.RequireClickToActivate)
             {
+                // 如果不需要再次点击来触发就给个空位置让他触发
                 ActivateCommand(new RaycastHit());
             }
         }
         private void HandleCommandRingUI(Vector3 Pos)
         {
+            // 命令环UI
             EventSystem.EventBus.Publish<MobileCommandRingSpawnEvent>(new
              MobileCommandRingSpawnEvent
             { Pos = Pos });
@@ -273,7 +275,9 @@ namespace RTS.Player
             List<BaseCommandable> Commandables = CommandableSelectedList.
             Where((unit) => unit is BaseCommandable).
             Cast<BaseCommandable>().ToList();
+
             HandleCommandRingUI(hit.point);
+            
             for (int i = 0; i < Commandables.Count; i++)
             {
                 CommandContext commandContext = new(Commandables[i], hit, i);

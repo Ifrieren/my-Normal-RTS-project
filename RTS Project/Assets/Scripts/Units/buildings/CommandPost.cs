@@ -8,13 +8,16 @@ public class CommandPost : BaseBuilding
 {
     [Header("状态")]
     [SerializeField] private bool isBuilding;
-    private const int MAX_QUENE_LIST = 5;
-    private Queue<UnitSO> BuildingQuene = new(MAX_QUENE_LIST);
 
-    private void Update()
-    {
-        UpdateBuildingQuene();
-    }
+    [field: SerializeField] public UnitSO CurrentBuildingUnit { get; private set; }
+    [field: SerializeField] public float CurrentQueneStartTime { get; private set; }
+
+    public delegate void QueneUpdateEvent(UnitSO[] UnitQuene);
+    public event QueneUpdateEvent OnQueneUpdate;
+    private const int MAX_QUENE_LIST = 5;
+
+    public int QueneSize => BuildingQuene.Count;
+    private Queue<UnitSO> BuildingQuene = new(MAX_QUENE_LIST);
 
     public void BuildUnit(UnitSO unitSO)
     {
@@ -24,7 +27,7 @@ public class CommandPost : BaseBuilding
             return;
         }
         BuildingQuene.Enqueue(unitSO);
-
+        UpdateBuildingQuene();
     }
     private void UpdateBuildingQuene()
     {
@@ -33,16 +36,29 @@ public class CommandPost : BaseBuilding
             StartCoroutine(DoBuildUnit());
             isBuilding = true;
         }
+        
     }
 
     private IEnumerator DoBuildUnit()
     {
+
         Debug.Log("开始建造单位");
-        UnitSO unitSO = BuildingQuene.Peek();
-        yield return new WaitForSeconds(unitSO.BuildTime);
-        Instantiate(unitSO.UnitPrefab, transform.position, quaternion.identity);
+
+        CurrentBuildingUnit = BuildingQuene.Peek();
+        CurrentQueneStartTime = Time.time;
+
+        OnQueneUpdate?.Invoke(BuildingQuene.ToArray());// 更新建造UI事件
+
+        yield return new WaitForSeconds(CurrentBuildingUnit.BuildTime);
+        Instantiate(CurrentBuildingUnit.UnitPrefab, transform.position, quaternion.identity);
+
         BuildingQuene.Dequeue();
-        isBuilding = false;
+
         Debug.Log("单位建造完成");
+
+        isBuilding = false;
+        UpdateBuildingQuene();
+
+        OnQueneUpdate?.Invoke(BuildingQuene.ToArray()); //清除建造的进度条状态
     }
 }

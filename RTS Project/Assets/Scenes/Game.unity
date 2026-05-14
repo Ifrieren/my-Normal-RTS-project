@@ -7185,6 +7185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83666888848d0d644a7791f1f7850b1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RTS.UI.RuntimeUI
+  buildingsBuildingUI: {fileID: 1619984283}
   CommandsUI: {fileID: 1741608388}
 --- !u!1001 &646904507
 PrefabInstance:
@@ -21299,6 +21300,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1619984282}
+  - component: {fileID: 1619984283}
   m_Layer: 5
   m_Name: Building In Progress Container
   m_TagString: Untagged
@@ -21333,6 +21335,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1619984283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1619984281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 961622ddd96f19c459847cce343129fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RTS.UI.Containers.BuildingsBuildingUI
+  progressBar: {fileID: 1685340243}
 --- !u!1 &1621070753
 GameObject:
   m_ObjectHideFlags: 0
@@ -22234,6 +22249,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RTS.UI.Components.ProgressBar
   Padding: {x: 10, y: 9}
   mask: {fileID: 1031983723}
+  progress: 0
 --- !u!1001 &1685616517
 PrefabInstance:
   m_ObjectHideFlags: 0
