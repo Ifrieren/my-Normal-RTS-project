@@ -7,6 +7,8 @@ namespace RTS.Units
     {
         [field: SerializeField] public float maxHealth { get; private set; }
         [field: SerializeField] public GameObject UnitPrefab { get; private set; }
+
+        [field: SerializeField] public Sprite UnitIcon { get; private set; }
         [field: SerializeField] public float BuildTime { get; private set; } = 3f;
     }
 

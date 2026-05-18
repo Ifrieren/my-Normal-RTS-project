@@ -36,9 +36,9 @@ namespace RTS.UI
                 SelectedCommandables.Add(Commandable);
                 CommandsUI.EnableFor(SelectedCommandables);
             }
-            if( evt.Unit is CommandPost commandPost && SelectedCommandables.Count == 1)
+            if( evt.Unit is CommandableBuilding CommandableBuilding && SelectedCommandables.Count == 1)
             {
-                buildingsBuildingUI.EnableFor(commandPost);
+                buildingsBuildingUI.EnableFor(CommandableBuilding);
             }
         }
         private void HandleUnitDeSelected(UnitDeSelectEvent evt)
@@ -50,9 +50,9 @@ namespace RTS.UI
                 {
                     CommandsUI.EnableFor(SelectedCommandables);
                     
-                    if(evt.Unit is CommandPost  commandPost&& SelectedCommandables.Count == 1)
+                    if(evt.Unit is CommandableBuilding CommandableBuilding && SelectedCommandables.Count == 1)
                     {
-                        buildingsBuildingUI.EnableFor(commandPost);
+                        buildingsBuildingUI.EnableFor(CommandableBuilding);
                     }
                     else
                     {

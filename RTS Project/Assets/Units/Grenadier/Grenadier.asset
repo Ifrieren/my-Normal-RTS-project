@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e5de766c40d38be4ea2d10a3383e9b83, type: 3}
-  m_Name: Worker
+  m_Name: Grenadier
   m_EditorClassIdentifier: Assembly-CSharp::RTS.Units.UnitSO
-  <maxHealth>k__BackingField: 0
-  <UnitPrefab>k__BackingField: {fileID: 6510919576379171628, guid: 883b9682b823cb84cac42e4ad43d41d2, type: 3}
-  <UnitIcon>k__BackingField: {fileID: 21300000, guid: 6e40afd6361ffe44a87846d98dd04e7c, type: 3}
+  <maxHealth>k__BackingField: 50
+  <UnitPrefab>k__BackingField: {fileID: 1813055781741166138, guid: d606f67b2169916478d3b1364e1b4428, type: 3}
+  <UnitIcon>k__BackingField: {fileID: 21300000, guid: 920f021a2d26a374593bb761fa77d29d, type: 3}
   <BuildTime>k__BackingField: 3

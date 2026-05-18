@@ -44,7 +44,7 @@ namespace RTS.Player
 
         private BaseCommand ActiveCommand = null;
         private List<BaseCommandable> CommandableSelectedList = new(20);
-        
+        private List<BaseMobileUnit> baseMobileUnits = new(20);
         private HashSet<BaseCommandable> units = new(200); // 这是场景中总共可容纳的单位
 
 
@@ -227,14 +227,38 @@ namespace RTS.Player
                 // 检测单位是否再框内
                 foreach (BaseCommandable unit in units)
                 {
+
                     Vector2 unitsPos = camera.WorldToScreenPoint(unit.transform.position);
                     if (selectBounds.Contains(unitsPos))
                     {
-                        EventSystem.EventBus.Publish<UnitSelectEvent>(
-                        new UnitSelectEvent { Unit = unit });
+
                         CommandableSelectedList.Add(unit);
+
+                        if (unit is BaseMobileUnit mobileUnit)
+                        {
+                            baseMobileUnits.Add(mobileUnit);
+                        }
+
                     }
                 }
+
+                if (baseMobileUnits.Count == 0) //说明框选的全是建筑
+                {
+                    foreach (BaseCommandable unit in CommandableSelectedList)
+                    {
+                        EventSystem.EventBus.Publish<UnitSelectEvent>(
+                        new UnitSelectEvent { Unit = unit });
+                    }
+                }
+                else
+                {
+                    foreach (BaseCommandable unit in baseMobileUnits)
+                    {
+                        EventSystem.EventBus.Publish<UnitSelectEvent>(
+                        new UnitSelectEvent { Unit = unit });
+                    }
+                }
+
                 SelectBoxUI.gameObject.SetActive(false);
                 isDragging = false;
             }
@@ -277,18 +301,22 @@ namespace RTS.Player
             Cast<BaseCommandable>().ToList();
 
             HandleCommandRingUI(hit.point);
-            
+
             for (int i = 0; i < Commandables.Count; i++)
             {
-                CommandContext commandContext = new(Commandables[i], hit, i);
-                ActiveCommand.Handle(commandContext);
+                CommandContext commandContext = new(Commandables[i], hit, i, CommandSource.UI);
+                if (ActiveCommand.CanHandle(commandContext))
+                {
+                    ActiveCommand.Handle(commandContext);
+                }
+
             }
             ActiveCommand = null;
         }
 
         private void ClearSelectedList()
         {
-            Debug.Log($"清空单位选择列表，当前列表数量: {CommandableSelectedList.Count}");
+            Debug.Log($"清空单位选择列表，当前列表数量: {CommandableSelectedList.Count} , {baseMobileUnits.Count}");
 
             if (CommandableSelectedList.Count > 0)
             {
@@ -300,7 +328,7 @@ namespace RTS.Player
                 }
 
                 CommandableSelectedList.Clear();
-
+                baseMobileUnits.Clear();
                 Debug.Log("列表已清空");
             }
 

@@ -15,6 +15,7 @@ namespace RTS.UI.Containers
         private void Awake()
         {
             button = GetComponent<Button>();
+            Disable();
         }
 
         public void EnableFor(BaseCommand command, UnityAction onClick)

@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5de766c40d38be4ea2d10a3383e9b83, type: 3}
   m_Name: Air Transport
   m_EditorClassIdentifier: Assembly-CSharp::RTS.Units.UnitSO
-  maxHealth: 100
+  <maxHealth>k__BackingField: 0
+  <UnitPrefab>k__BackingField: {fileID: 6158950717762214277, guid: 4d0c2e8c3bd76b64097b86828a286bc6, type: 3}
+  <UnitIcon>k__BackingField: {fileID: 21300000, guid: 4d0944a6c62020d4f955f5b7174bb96f, type: 3}
+  <BuildTime>k__BackingField: 3

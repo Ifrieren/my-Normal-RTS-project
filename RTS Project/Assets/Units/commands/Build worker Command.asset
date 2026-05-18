@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64bd2f5e537f06041b6836131e3675c8, type: 3}
-  m_Name: Build Unit Command
+  m_Name: Build worker Command
   m_EditorClassIdentifier: Assembly-CSharp::RTS.Commands.BuildUnitCommand
   <Icon>k__BackingField: {fileID: 21300000, guid: 6e40afd6361ffe44a87846d98dd04e7c, type: 3}
   <slot>k__BackingField: 0
   <RequireClickToActivate>k__BackingField: 0
+  <Source>k__BackingField: 0
   <unitSO>k__BackingField: {fileID: 11400000, guid: 9cbdcc3989332e34aabff9d677ac9684, type: 2}
