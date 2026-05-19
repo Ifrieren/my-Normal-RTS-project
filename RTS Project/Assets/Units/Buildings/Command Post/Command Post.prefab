@@ -88,10 +88,13 @@ MonoBehaviour:
   DecalProjector: {fileID: 4086701707762634684}
   agent: {fileID: 0}
   isSelected: 0
-  UnitAttribute: {fileID: 11400000, guid: 9cbdcc3989332e34aabff9d677ac9684, type: 2}
+  UnitAttribute: {fileID: 11400000, guid: eb8c8cec60fa4e14ebf1b09fa5954abe, type: 2}
   <currentHealth>k__BackingField: 0
   <availableCommands>k__BackingField:
   - {fileID: 11400000, guid: d2210ee831fb7f842bf1db9b3bba93f7, type: 2}
+  isBuilding: 0
+  <CurrentBuildingUnit>k__BackingField: {fileID: 0}
+  <CurrentQueneStartTime>k__BackingField: 0
 --- !u!1 &7166962564996788710
 GameObject:
   m_ObjectHideFlags: 0

@@ -39,10 +39,11 @@ namespace RTS.UI.Components
             {
                 availableCommands.UnionWith(commandable.availableCommands);
             }
-
+            
             for (int i = 0; i < actionButtons.Length; i++)
             {
                 BaseCommand actionForSlot = availableCommands.Where(action => action.slot == i).FirstOrDefault();
+                
                 if (actionForSlot != null)
                 {
                     actionButtons[i].EnableFor(actionForSlot, HandleClick(actionForSlot));

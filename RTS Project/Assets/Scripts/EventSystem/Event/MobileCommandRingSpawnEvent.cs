@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-namespace RTS.UI
+namespace RTS.EventSystem
 {
     public class MobileCommandRingSpawnEvent
     {

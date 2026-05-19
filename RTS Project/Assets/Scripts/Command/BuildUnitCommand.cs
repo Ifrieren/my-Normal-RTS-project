@@ -10,15 +10,16 @@ namespace RTS.Commands
     {
 
         [field: SerializeField] public UnitSO unitSO { get; private set; }
+        
         public override bool CanHandle(CommandContext commandContext)
         {
-            return commandContext.Commandable is CommandPost;
+            return commandContext.Commandable is CommandableBuilding && commandContext.CommandSource == CommandSource.UI;
         }
 
         public override void Handle(CommandContext commandContext)
         {
-            CommandPost commandPost = (CommandPost)commandContext.Commandable;
-            commandPost.BuildUnit(unitSO);
+            CommandableBuilding CommandableBuilding = (CommandableBuilding)commandContext.Commandable;
+            CommandableBuilding.BuildUnit(unitSO);
         }
     }
 

@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-namespace RTS.UI
+namespace RTS.EventSystem
 {
     [Obsolete]
     public class MobileCommandRingDestroyEvent
